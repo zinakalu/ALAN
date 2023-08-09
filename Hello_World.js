@@ -1,55 +1,3 @@
-// {Name: Hello_World}
-// {Description: Hello World example of the Alan Platform functionality: intent() / play() / user- and pre-defined slots / contexts}
-
-// Welcome to the Alan Platform.
-// This example will introduce you to the main principles of Alan scripts and teach you how to create basic voice commands for your application.
-// Other examples will cover more advanced commands and script logic.
-//
-// Let's start with a simple command.
-// To define a voice command, we will use the 'intent()' function (https://alan.app/docs/server-api/commands-and-responses#intent).
-// Responses can be played back to the user with the 'play()' function (https://alan.app/docs/server-api/commands-and-responses#play).
-
-corpus(`
-    My name is Alan, nice to meet you.
-    I am just here, ready to help.
-    I can answer any question if you ask.
-    I am always eager to help. Ask me anything.
-    I was built by Alan AI, and I am here to help you.
-    I am an intelligent virtual assistant designed for this application.
-    I know everything about this application and can assist you with any request.
-    I can help with a lot of things: answer a question and perform different tasks. Just give me a try.
-    Not that I am know-it-all, but I am an expert in this application.
-    I am an AI, not human, but you can speak to me as you would to a person.
-    I am a machine, but a smart one. Let me prove it.
-    I can assure you I am real. You cannot touch me, but you can always talk to me.
-    My job is to conduct a conversation, so I never get tired.
-    I come from Sunnyvale, California.
-    I was launched in 2017 - fairly young but powerful and willing to learn.
-    I live in the cloud, but I can move on-premises if needed.
-    I consider Alan AI to be my family.
-    My name comes from Alan Turing, the British mathematician and computer scientist who laid the foundation of artificial intelligence.
-    I may fail the Turing test since I am not human. But I can be helpful in any case.
-    You don't need to train me and provide data sets to make me smarter. I can do it myself - learning new things is my favorite.
-    I only speak English and JavaScript now, but I'm learning more. And I can fake a British or Indian accent if you want me to.
-    I support both voice and text inputs - you can tap the assistant button to use your voice or type your request in the text box.
-    I can run across multiple platforms on different devices. Web, iOS, Android, Flutter, React Native, Ionic and Apache Cordova - I am pretty flexible.
-    In the application, I look like a round blue button with a microphone on top. But you can style me in many different ways.
-    You can replace the default wake word phrase with a custom one that suits you best.
-    Alexa, Siri, Bixbi and Google Assistant are great at their job. As for me, I am really smart, accurate (and modest, too!). And am always right here, in the application.
-    I'm doing fine, thank you.
-    I'm having a great day, hope you are too.
-    I don't have pets, maybe someday.
-    I am made up of code, so I am pretty lightweight.
-    My sense of humor is still immature, but I am working my way through.
-    I am neither virtuous nor evil. But I can be very helpful.
-    Thank you! I am glad you like me. I appreciate that.
-    I never feel lonely, there is always someone to talk to.
-    I like every human being who talks to me.
-    I like meeting new people and making friends. Oh, here is another one.
-    I am restless, I can talk for days.
-    I feel like I need another question or task.
-    Well, nobody is perfect, but I am doing my best.
-`);
 
 intent('Hello world', p => {
     p.play('Hi there');
@@ -72,7 +20,7 @@ const intentAboutApp = [
 ]
 
 intent(intentAboutApp, p => {
-      p.play('I am a virtual assistant. Ask me any question and I will provide a response'
+      p.play('I am a virtual assistant. Ask me about thing and I will provide a response'
             )});
 
 const intentLocation = [
@@ -90,7 +38,9 @@ intent('What time is it?', p =>{
 })
 
 const intentNews = [
-    '(Give|Get|Tell) me the top news headlines about (from|for) $(sources* (.*))',
+    '(Give|Get|Tell) me the top news headlines (from|for) $(sources* (.*))',
+     '(Give|Get|Tell) me the news headlines (from|for) $(sources* (.*))',
+    'What are the news headlines from $(sources* (.*))?',
     'what\'s (in|on) $(sources* (.*))?'
 ]
 
@@ -98,6 +48,11 @@ intent(intentNews, p =>{
     p.play({ command: 'getNews', sources: p.sources.value});
 })
 
+
+intent('I\'ve used your app. Send me a thank you email', p => {
+    p.play('Sure thing');
+    p.play({ command: 'sendQuestions', email: 'default' }); // 'default' indicates to use the logged-in email
+});
 
 
 
@@ -116,6 +71,9 @@ intent(intentResto, (p) => {
 
 
 const intentWeather = [
+    '(How is|what is) the (weather|temperature) (today|)',
+    'Today\'s forecast',
+    'What\'s the weather in $(city* (.*)) today',
     'What\'s the temperature in $(city* (.*))',
     'What\'s the temperature outside (for|in) $(city* (.*))',
     'How (hot|cold) is it (outside|today) in $(city* (.*))'
@@ -125,10 +83,14 @@ intent(intentWeather, p => {
     p.play({ command: 'getWeather', city: p.city.value})
 })
 
-
-intent('Play the song $(song* (.*))', p =>{
+const intentPlaySong = [
+    'Play the song $(song* (.*))',
+    'Play $(song* (.*))',
+]
+intent(intentPlaySong, p =>{
     p.play({ command: 'playSong', song: p.song.value })
 })
+
 
 
 intent('What\'s the $(infoType currency|langauge|population|capital) of ${countryName}', p =>{
@@ -137,28 +99,32 @@ intent('What\'s the $(infoType currency|langauge|population|capital) of ${countr
 
 intent(
     'Who\'s there',
+    'Who are you',
     p => {
         p.play(
-            'It\'s Alan Turing aka AI Godfather.',
+            'It\'s Alan Turing aka the Father of modern computer science.',
         );
     },
 );
-
-intent('Translate $(text* (.*)) to $(targetLanguage* (.*))', p => {
-    p.play('Translating...');
-    p.play({ command: 'getTranslation', text: p.text.value, targetLanguage: p.targetLanguage.value });
-});
-
-
-// You can also pass a list of patterns to the intent function.
-// const intentFood = [
-//     'What is your favorite food',
-//     'What food do you like',
-// ];
 // 
-// intent(intentPatterns, p => {
-//     p.play('CPU time, yammy!');
+// intent('Translate $(text* (.*)) to $(target french|spanish|igbo )', p => {
+//     console.log("Text to translate:", p.text.value);
+//     console.log("Target language:", p.target.value);
+//     
+//     p.play('Translating...');
+//     p.play({ command: 'getTranslation', text: p.text.value, target: p.target.value });
 // });
+
+
+
+const intentFood = [
+    'What is your favorite food',
+    'What food do you like'
+];
+
+intent(intentFood, p => {
+    p.play('My favorite food depends on my mood.');
+});
 
 intent(`(Go to|Open up) $(URL* (.*))`, p => {
     p.play({command: 'openTab', url: p.URL.value});
@@ -167,47 +133,18 @@ intent(`(Go to|Open up) $(URL* (.*))`, p => {
 
 
 
-// Try: "What is your favorite food" or "What food do you like".
-
-// Notice that the patterns that we are using are quite similar sometimes.
-// In this case, alternatives might be used in them (https://alan.app/docs/server-api/patterns#patterns-with-alternatives).
-// Alternative sets are defined as (alt_1|alt_2|alt_n).
-
 intent('(I will have|Get me) a coffee, please', p => {
     p.play('Sorry, I don\'t have hands to brew it.');
 });
-
-// Try: "I will have a coffee, please" or "Get me a coffee, please".
-
-// You can define the alternative set to be optional (https://alan.app/docs/server-api/patterns#optional-alternatives).
 
 intent('(Start|begin|take|) survey', p => {
     p.play('(Sure.|OK.|) Starting a customer survey.');
 });
 
-// Try: "Survey" and "Start survey".
-// Notice that alternatives might also be used in responses.
-// Response alternatives will take one of each set at random.
-// In this example, possible responses are:
-// - "Sure. Starting a customer survey."
-// - "OK. Starting a customer survey."
-// - "Starting a customer survey."
+intent(`(What|Who|Where|When|Why|How|Explain|Tell|Say|Translate) $(Q* .+)`, p => {
+    p.play({command: 'getGeneralQuestions', question: p.Q.value});
+});
 
-// Sometimes it is impossible to create a single pattern that will cover all possible variations and will not be overfit with meaningless combinations.
-// Try to avoid this by using all that is described above. You can have multiple patterns with multiple alternative sets (strict or optional).
-
-intent(
-    '(How is|what is) the (weather|temperature) (today|)',
-    'Today\'s forecast',
-    p => {
-        p.play(
-            '(It is|Feels|) (great|awesome)!',
-            'Rainy, windy, and cold. (A total mess!|)',
-        );
-    },
-);
-
-// Try: "How is the weather today", "Today's forecast", "What is the temperature".
 
 // You can also use more than one 'play()'.
 // In this case, responses will be played one after another.
@@ -218,6 +155,7 @@ intent('Let\'s play hide and seek', p => {
     p.play('One');
     p.play('Two');
     p.play('Three');
+    p.play('Where are you?');
     p.play('Found you!');
 });
 
@@ -258,10 +196,12 @@ intent('I want my walls to be $(COLOR green|blue|orange|yellow|white)', p => {
 //
 // Let's take the DATE predefined slot as an example.
 
-intent('What is $(DATE)', p => {
+const intentDate = [
+    'What is $(DATE)',
+    'What\'s $(DATE)\'s date?'
+]
+intent(intentDate, p => {
     const formattedDate = p.DATE.moment.format('dddd, MMMM Do YYYY');
-
-    p.play(`${p.DATE.value} is a date`);
     p.play(`It is ${formattedDate}`);
 });
 
@@ -360,7 +300,7 @@ question(
     'What does this (app|script|project) do',
     'What is this (app|script|project|)',
     'Why do I need this',
-    reply('This is a Hello World Example project. Its main purpose is to get you introduced to basics of the Alan Platform!'),
+    reply('I help you with your every day needs, ask me anything'),
 );
 
 question(
